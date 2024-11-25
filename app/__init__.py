@@ -14,11 +14,11 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
 
     # Указываем, какую страницу загружать при неавторизованном доступе
-    login_manager.login_view = 'auth_bp.index'
+    login_manager.login_view = 'auth_bp.login'
 
     # Регистрация blueprints
-    from app.routes.main import main_bp
-    app.register_blueprint(main_bp)
+    from app.routes.index import index_bp
+    app.register_blueprint(index_bp)
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)
     from app.routes.user import user_bp

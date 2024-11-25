@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean())  # Флаг активности пользователя
     confirmed_at = db.Column(db.DateTime())  # Дата подтверждения регистрации
 
-    roles = db.relationship('Role', secondary=roles_users,
+    roles = db.relationship('Role', secondary=roles_users, lazy='dynamic',
                             backref=db.backref('users', lazy='dynamic'))
     # Связь с ролями (многие ко многим)
     user_results_bool = db.relationship('ResultBool',
@@ -55,8 +55,8 @@ class WOD(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     wod_name = db.Column(db.String(100), unique=False, nullable=False)
-    warm_up = db.Column(db.Text, nullable=False)
-    workout = db.Column(db.Text, nullable=False)
+    warm_up = db.Column(db.Text, nullable=False, default='')
+    workout = db.Column(db.Text, nullable=False, default='')
     description = db.Column(db.Text, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now)
     # Отношения с пользователем

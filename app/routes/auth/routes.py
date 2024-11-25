@@ -13,7 +13,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('main_bp.index'))
+            return redirect(url_for('index_bp.index'))
         flash('Неверный email или пароль', 'danger')
     return render_template('auth/login.html', form=form)
 
@@ -48,5 +48,5 @@ def register():
         db.session.commit()
         login_user(user)
         flash('Вы успешно зарегистрированы!', 'success')
-        return redirect(url_for('main_bp.index'))
+        return redirect(url_for('index_bp.index'))
     return render_template('auth/register.html', form=form, title='Регистрация')
