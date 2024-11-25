@@ -67,4 +67,7 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements/base.txt ]; then pip install -r requirements/base.txt; fi
     - name: Run project
-      run: python run.py
+      run: |
+        python run.py &
+        sleep 10  # Дайте серверу время запуститься
+        curl http://127.0.0.1:5000  # Проверка, что сервер запущен
