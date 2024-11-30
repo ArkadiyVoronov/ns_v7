@@ -3,19 +3,22 @@
 pip install -r requirements/base.txt
 pip freeze > requirements/base.txt
 
-2. Коммманды:
+2. Команды:
 БД:
 flask db init
 flask db migrate
 flask db migrate -m "#"
 flask db upgrade
 
-БД генерация 5 Тренировк Дня:
+Генерация 5 Тренировок Дня:
 flask create_wods
+
+Генерация 3 Пользователей:
+flask create_users
 
 3. Тесты:
 Запуск:
-python -m unittest discover -s tests
+pytest
 
 
 

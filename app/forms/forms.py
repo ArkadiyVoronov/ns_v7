@@ -12,6 +12,9 @@ class RegistrationForm(FlaskForm):
     active = BooleanField('Активный', default=True)
     submit = SubmitField('Зарегистрироваться')
 
+    # Добавляем скрытое поле CSRF-токена
+    csrf_token = StringField()
+
 
 # Форма входа
 class LoginForm(FlaskForm):
@@ -32,6 +35,6 @@ class EditProfileForm(FlaskForm):
 
 
 # Форма выполнения Тренировки Дня. Галочка.
-class ResultBoolForm(FlaskForm):
+class ResultForm(FlaskForm):
     result = BooleanField('Результат, True или Не True?', validators=[DataRequired()])
     submit = SubmitField('Подтвердить')

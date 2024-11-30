@@ -3,10 +3,10 @@
 {% block app_content %}
 <h2>Список Тренировок</h2>
 <br>
-{% for wod in wods_list %}
+{% for workout in workouts_list %}
 <div class="alert alert-info">
-    <a href="{{ url_for('wod_bp.wod_detail', id=wod.id) }}">
-        {{ wod.wod_name }}
+    <a href="{{ url_for('workout_bp.workout_detail', id=workout.id) }}">
+        {{ workout.name }}
     </a>
 </div>
 {% endfor %}

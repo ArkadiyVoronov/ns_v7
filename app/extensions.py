@@ -2,16 +2,34 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_wtf import CSRFProtect
+from app.domain.user import User
 
 # Инициализация расширений
-db = SQLAlchemy()  # Инициализация SQLAlchemy для работы с базой данных
-migrate = Migrate()  # Инициализация Flask-Migrate для миграций базы данных
-bootstrap = Bootstrap()  # Инициализация Flask-Bootstrap для использования Bootstrap стилей
-login_manager = LoginManager()  # Инициализация Flask-Login для управления сессиями пользователей
+db = SQLAlchemy()
+migrate = Migrate()
+bootstrap = Bootstrap()
+login_manager = LoginManager()
+csrf = CSRFProtect()
 
 
 # Функция для загрузки пользователя из базы данных
 @login_manager.user_loader
 def load_user(user_id):
-    from app.models.models import User  # Импорт модели User здесь, чтобы избежать циклического импорта
-    return User.query.get(user_id)  # Возвращаем пользователя по его ID
+    from app.data.repositories.user_repository import UserRepository
+    try:
+        user_id = int(user_id)  # попытка преобразовать user_id в целое число
+    except (ValueError, TypeError):
+        return None  # если преобразование не удалось, возвращаем None
+
+    user_model = UserRepository.get_user_by_id(user_id)
+    if not user_model:
+        return None
+    return User(
+        id=user_model.id,
+        username=user_model.username,
+        email=user_model.email,
+        password_hash=user_model.password_hash,
+        active=user_model.active,
+        confirmed_at=user_model.confirmed_at
+    )

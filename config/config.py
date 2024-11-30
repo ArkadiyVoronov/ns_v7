@@ -10,7 +10,7 @@ class Config:
 
     # Путь к базе данных SQLite
     DATABASE_FILE = 'sample_db.sqlite'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, '../app.db')
 
     # Включить логирование SQL-запросов
     SQLALCHEMY_ECHO = True
@@ -19,9 +19,3 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
-class TestConfig(Config):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    WTF_CSRF_ENABLED = False  # Отключаем CSRF для тестов
-    SECRET_KEY = 'test-secret-key'
-    SERVER_NAME = 'localhost'
