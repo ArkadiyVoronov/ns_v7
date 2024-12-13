@@ -89,4 +89,3 @@ jobs:
     - name: Run project
       run: |
         python run.py &
-
