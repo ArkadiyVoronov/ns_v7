@@ -56,7 +56,7 @@ jobs:
       run: |
         flask db upgrade
     - name: Generate training data
-      run: flask create_wods
+      run: flask create_workouts
 
   run-project:
     runs-on: ubuntu-latest
