@@ -37,7 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
+        pip install flake8 pytest flask flask_migrate psycopg2-binary
         if [ -f requirements/base.txt ]; then pip install -r requirements/base.txt; fi
         pip freeze > requirements/base.txt
     - name: Lint with flake8
@@ -46,7 +46,13 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Initialize and migrate database
+    - name: Initialize database migrations
+      run: |
+        flask db init
+    - name: Create initial migration
+      run: |
+        flask db migrate -m "Initial migration."
+    - name: Upgrade database
       run: |
         flask db upgrade
     - name: Generate training data
