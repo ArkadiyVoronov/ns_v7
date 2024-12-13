@@ -3,7 +3,6 @@ from flask import url_for
 from urllib.parse import urlparse, unquote
 from app.services.user_service import UserService
 
-
 @pytest.mark.usefixtures("client", "app_context", "clean_db")
 class TestUserRoutes:
 
