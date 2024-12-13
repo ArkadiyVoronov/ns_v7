@@ -10,7 +10,7 @@ class WorkoutRepository:
             return None
         return Workout(
             id=workout_model.id,
-            name=workout_model.name,
+            name=workout_model.name or workout_model.date_posted.strftime('%Y-%m-%d'),
             warm_up=workout_model.warm_up,
             workout=workout_model.workout,
             description=workout_model.description,
@@ -23,7 +23,7 @@ class WorkoutRepository:
         return [
             Workout(
                 id=workout.id,
-                name=workout.name,
+                name=workout.name or workout.date_posted.strftime('%Y-%m-%d'),
                 warm_up=workout.warm_up,
                 workout=workout.workout,
                 description=workout.description,
@@ -73,7 +73,7 @@ class WorkoutRepository:
         workout_models = WorkoutModel.query.filter(WorkoutModel.date_posted.between(start_date, end_date)).all()
         return [Workout(
             id=wm.id,
-            name=wm.name,
+            name=wm.name or wm.date_posted.strftime("%Y-%m-%d"),
             warm_up=wm.warm_up,
             workout=wm.workout,
             description=wm.description,

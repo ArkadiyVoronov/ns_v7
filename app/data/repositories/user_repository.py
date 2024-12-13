@@ -12,30 +12,41 @@ class UserRepository:
 
     @staticmethod
     def save_user(user):
-        """ Сохранение пользователя """
-        # Проверяем, существует ли пользователь с таким же username
-        if UserModel.query.filter_by(username=user.username).first():
-            raise ValueError(f"Пользователь с именем '{user.username}' уже существует.")
+        """ Сохранение или обновление пользователя """
+        # Проверяем, существует ли пользователь
+        user_model = UserModel.query.get(user.id)
+        if user_model:
+            # Обновляем существующего пользователя
+            user_model.username = user.username
+            user_model.email = user.email  # Добавлено обновление email
+            if user.password:  # Обновляем пароль, если он был изменен
+                user_model.password_hash = generate_password_hash(user.password)
+            db.session.commit()
+            print(f"Пользователь {user.username} успешно обновлен в базе данных")
+        else:
+            # Проверяем, существует ли пользователь с таким же username
+            if UserModel.query.filter_by(username=user.username).first():
+                raise ValueError(f"Пользователь с именем '{user.username}' уже существует.")
 
-        # Проверяем, существует ли пользователь с таким же email
-        if UserModel.query.filter_by(email=user.email).first():
-            raise ValueError(f"Пользователь с email '{user.email}' уже существует.")
+            # Проверяем, существует ли пользователь с таким же email
+            if UserModel.query.filter_by(email=user.email).first():
+                raise ValueError(f"Пользователь с email '{user.email}' уже существует.")
 
-        # Хэшируем пароль перед сохранением
-        hashed_password = generate_password_hash(user.password)
+            # Хэшируем пароль перед сохранением
+            hashed_password = generate_password_hash(user.password)
 
-        # Создаём нового пользователя
-        user_model = UserModel(
-            username=user.username,
-            email=user.email,
-            password_hash=hashed_password,  # Хэшированный пароль
-            active=user.active,
-            confirmed_at=user.confirmed_at
-        )
-        db.session.add(user_model)
-        db.session.commit()
-        print(f"Пользователь {user.username} успешно сохранен в базе данных")
-        user.id = user_model.id
+            # Создаём нового пользователя
+            user_model = UserModel(
+                username=user.username,
+                email=user.email,
+                password_hash=hashed_password,  # Хэшированный пароль
+                active=user.active,
+                confirmed_at=user.confirmed_at
+            )
+            db.session.add(user_model)
+            db.session.commit()
+            print(f"Пользователь {user.username} успешно сохранен в базе данных")
+            user.id = user_model.id  # Устанавливаем ID для нового пользователя
         return user
 
     @staticmethod
@@ -69,3 +80,10 @@ class UserRepository:
             active=user_model.active,
             confirmed_at=user_model.confirmed_at
         )
+
+    @staticmethod
+    def update_user(user):
+        user_model = UserModel.query.get(user.id)
+        if user_model:
+            user_model.username = user.username
+            db.session.commit()

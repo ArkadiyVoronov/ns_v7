@@ -9,18 +9,14 @@ from ...forms.forms import ResultForm
 
 @workout_bp.route('/workouts')
 def workouts_list():
-    """
-    Отображает список всех тренировок.
-    """
-    workouts_list = WorkoutRepository.get_all_workouts()  # Используем репозиторий для получения тренировок
+    """ Отображает список всех тренировок. """
+    workouts_list = WorkoutRepository.get_all_workouts()
     return render_template('workout/workout_list.html', workouts_list=workouts_list, title='Список тренировок')
 
 
 @workout_bp.route('/workouts/<int:id>', methods=['GET', 'POST'])
 def workout_detail(id):
-    """
-    Отображает подробную информацию о тренировке и обрабатывает подтверждение ее выполнения.
-    """
+    """ Отображает подробную информацию о тренировке и обрабатывает подтверждение ее выполнения. """
     workout = WorkoutRepository.get_workout_by_id(id)  # Используем репозиторий для получения тренировки по id
     if not workout:
         abort(404)  # Возвращаем 404 ошибку, если тренировка не найдена
@@ -29,7 +25,11 @@ def workout_detail(id):
 
     if result_bool_form.validate_on_submit():
         if current_user.is_authenticated:
-            result = Result(confirm=result_bool_form.result.data, user_id=current_user.id, workout_id=id)
+            result = Result(
+                confirm=result_bool_form.result.data,
+                user_id=current_user.id,
+                workout_id=id
+            )
             ResultRepository.save_result(result)  # Используем репозиторий для сохранения результата
             flash('Поздравляем с выполнением тренировки!')
         else:
@@ -38,13 +38,7 @@ def workout_detail(id):
 
     if current_user.is_authenticated:
         # Ищем последний результат пользователя для данной тренировки
-        results = ResultRepository.get_results_by_user(current_user.id)  # Используем репозиторий
-        results = [r for r in results if r.workout_id == id]
-        if results:
-            results = sorted(results, key=lambda x: x.date_posted, reverse=True)[0]
-        else:
-            results = None
-
+        results = ResultRepository.get_results_by_user_and_workout(current_user.id, id)  # Используем репозиторий
     else:
         results = None
 
@@ -63,9 +57,7 @@ def workout_detail(id):
 @workout_bp.route('/workouts/<int:id>/confirm')
 @login_required
 def workout_confirm(id):
-    """
-    Подтверждает выполнение тренировки (старый вариант, вероятно, не нужен).
-    """
+    """ Подтверждает выполнение тренировки (старый вариант, вероятно, не нужен). """
     # Этот маршрут, вероятно, дублирует функциональность формы в wod_detail
     # и может быть удален, если он больше не используется.
 

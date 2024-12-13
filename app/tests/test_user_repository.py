@@ -5,11 +5,11 @@ from app.data.repositories.user_repository import UserRepository
 from app.domain.user import User
 
 
-@pytest.mark.usefixtures("client")
+@pytest.mark.usefixtures("client", "app_context", "clean_db")
 class TestUserRepository:
     """Тесты для репозитория пользователей."""
 
-    def test_get_user_by_id(self):
+    def test_get_user_by_id(self, app):
         """Тест получения пользователя по ID."""
         user_model = UserModel(username='testuser', email='test@example.com', password_hash='password', active=True)
         db.session.add(user_model)
@@ -25,7 +25,7 @@ class TestUserRepository:
         user_not_found = UserRepository.get_user_by_id(999)
         assert user_not_found is None
 
-    def test_save_user(self):
+    def test_save_user(self, app):
         """Тест сохранения пользователя."""
         user = User(id=None, username='newuser', email='new@example.com', password='newpassword', active=True)
         saved_user = UserRepository.save_user(user)

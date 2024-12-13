@@ -30,3 +30,8 @@ class UserService:
     @staticmethod
     def save_user(user):
         UserRepository.save_user(user)
+
+    @staticmethod
+    def update_user(user):
+        """ Обновление пользователя """
+        UserRepository.save_user(user)

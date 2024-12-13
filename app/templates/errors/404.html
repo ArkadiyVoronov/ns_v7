@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>Соррян, страница не найдена</h1>
-    <p><a href="{{ url_for('main.index') }}">Вернуться</a></p>
+    <h1>404 Ошибка</h1>
+    <p>{{ message }}</p>
+
+    <p><a href="{{ url_for('index_bp.index') }}">Вернуться</a></p>
 {% endblock %}

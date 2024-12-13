@@ -6,10 +6,10 @@ from app.data.repositories.workout_repository import WorkoutRepository
 from app.domain.workout import Workout
 
 
-@pytest.mark.usefixtures("client")
+@pytest.mark.usefixtures("app_context", "client", "clean_db")
 class TestWorkoutRepository:
     """Тесты для репозитория тренировок."""
-    def test_get_workout_by_id(self):
+    def test_get_workout_by_id(self, app):
         """Тест получения тренировки по ID."""
         workout_model = WorkoutModel(name='Test Workout', warm_up='Warm up', workout='Workout',
                                      description='Description')
@@ -24,7 +24,7 @@ class TestWorkoutRepository:
         workout_not_found = WorkoutRepository.get_workout_by_id(999)
         assert workout_not_found is None
 
-    def test_get_all_workouts(self):
+    def test_get_all_workouts(self, app):
         """Тест получения всех тренировок."""
         now = datetime.now()
         workout1 = WorkoutModel(name='Workout 1', warm_up='Warm up 1', workout='Workout 1', description='Desc 1',
@@ -39,7 +39,7 @@ class TestWorkoutRepository:
         assert workouts[0].name == 'Workout 2'  # Проверка порядка по дате
         assert workouts[1].name == 'Workout 1'
 
-    def test_save_workout(self):
+    def test_save_workout(self, app):
         """Тест сохранения тренировки."""
         workout = Workout(id=None, name='New Workout', warm_up='New Warm up', workout='New Workout',
                           description='New Description')

@@ -18,9 +18,9 @@ csrf = CSRFProtect()
 def load_user(user_id):
     from app.data.repositories.user_repository import UserRepository
     try:
-        user_id = int(user_id)  # попытка преобразовать user_id в целое число
+        user_id = int(user_id)
     except (ValueError, TypeError):
-        return None  # если преобразование не удалось, возвращаем None
+        return None
 
     user_model = UserRepository.get_user_by_id(user_id)
     if not user_model:

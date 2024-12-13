@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.forms.forms import EditProfileForm
-from app.services.user_service import UserService  # Импортируем UserService
+from app.services.user_service import UserService
 from app.data.repositories.result_repository import ResultRepository
 from . import user_bp
 
@@ -10,17 +10,11 @@ from . import user_bp
 @login_required
 def profile(username):
     """Маршрут профиля пользователя. """
-    # Получаем пользователя по имени через UserService
-    user = UserService.get_user_by_username(username)  # !!! ДОБАВИТЬ В user_repository и user_service!!!
-
+    user = UserService.get_user_by_username(username)
     if not user:
-        flash("Пользователь не найден", 'danger')  # !!! ПЕРЕДЕЛАТЬ ПРОВЕРКУ, ЧТОБЫ ВОЗВРАЩАЛАСЬ ОШИБКА 404 !!!
-        return redirect(url_for('index_bp.index'))
-
-    # Получаем результаты пользователя
+        return render_template('errors/404.html', message="Пользователь не найден"), 404
     results = ResultRepository.get_results_by_user(user.id)
-    # Считаем количество выполненных тренировок
-    completed_wods = sum(1 for result in results if result.confirm)  # Подсчет выполненных тренировок
+    completed_wods = sum(1 for result in results if result.confirm)
 
     return render_template('user/profile.html', user=user, completed_wods=completed_wods)
 
@@ -31,9 +25,8 @@ def edit_profile():
     """ Обрабатывает GET и POST запросы для редактирования профиля пользователя. """
     form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
-        # Обновляем имя пользователя через UserService
         current_user.username = form.username.data
-        UserService.save_user(current_user)  # !!! ДОБАВИТЬ save_user В UserService !!!
+        UserService.update_user(current_user)
         flash('Изменения сохранены.')
         return redirect(url_for('user_bp.edit_profile'))
     elif request.method == 'GET':

@@ -45,6 +45,23 @@ class ResultRepository:
         ]
 
     @staticmethod
+    def get_results_by_user_and_workout(user_id, workout_id):
+        result_models = ResultModel.query.filter(
+            ResultModel.user_id == user_id,
+            ResultModel.workout_id == workout_id
+        ).order_by(ResultModel.date_posted.desc()).all()
+
+        if not result_models:
+            return None
+        return Result(
+            id=result_models[0].id,
+            confirm=result_models[0].confirm,
+            user_id=result_models[0].user_id,
+            workout_id=result_models[0].workout_id,
+            date_posted=result_models[0].date_posted
+        )
+
+    @staticmethod
     def save_result(result):
         if result.id:
             # Update existing result
@@ -63,9 +80,9 @@ class ResultRepository:
                 confirm=result.confirm,
                 date_posted=result.date_posted
             )
-            db.session.add(result_model)  # Добавляем объект в сессию
+            db.session.add(result_model)
             db.session.flush()  # Обновляем объект, чтобы получить ID
-            result.id = result_model.id  # Устанавливаем ID
+            result.id = result_model.id
         db.session.commit()
         return result
 

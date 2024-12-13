@@ -4,7 +4,7 @@ from datetime import datetime
 class Workout:
     def __init__(self, id, name, warm_up, workout, description, date_posted=None):
         self.id = id
-        self.name = name
+        self.name = name or date_posted.strftime('%Y-%m-%d')
         self.warm_up = warm_up
         self.workout = workout
         self.description = description

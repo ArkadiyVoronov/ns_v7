@@ -2,27 +2,27 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<h1>Привет, кАтлет! {{ current_user.username }}</h1>
-<h2>Главная</h2>
-<p>Список из 3-х последних тренировок</p>
-<br>
-<p>Количество тренировок: {{ workouts_count }}</p>
-{% for workout in workouts %}
-
-    <div class="alert alert-info">
-        <h3>{{ workout.date_posted.date() }}</h3>
-        <br>
-        <h4>Разминка</h4>
-        {{ workout.warm_up | safe }}
-        <br>
-        <h4>Комплекс...</h4>
-        <br>
-        <button class="btn-warning">
-        <a href="{{ url_for('workout_bp.workout_detail', id=workout.id) }}">Подробнее</a>
-        </button>
-
-
-    </div>
-{% endfor %}
-<br>
+    <h1>Привет, {{ current_user.username }}!</h1>
+    <h2>Главная</h2>
+    <p>Список из 3-х последних тренировок</p>
+    <br>
+    {% if not workouts %}
+        <p>Нет доступных тренировок.</p>
+    {% else %}
+        <p>Количество тренировок: {{ workouts_count }}</p>
+        {% for workout in workouts %}
+            <div class="alert alert-info">
+                <h3>{{ workout.date_posted.date() }}</h3>
+                <br>
+                <h4>Разминка</h4>
+                <p style="white-space: pre-line;">{{ workout.warm_up | safe }}</p>
+                <br>
+                <h4>Комплекс...</h4>
+                <br>
+                <button class="btn-warning">
+                    <a href="{{ url_for('workout_bp.workout_detail', id=workout.id) }}">Подробнее</a>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

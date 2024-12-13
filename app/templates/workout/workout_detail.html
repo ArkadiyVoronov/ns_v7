@@ -2,10 +2,8 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-
-
 <br>
-        <a href="{{ url_for('workout_bp.workouts_list')}} ">К списку тренировок</a>
+<a href="{{ url_for('workout_bp.workouts_list')}} ">К списку тренировок</a>
 <br>
 <a href="#">Статистика комплекса</a>
 <br>
@@ -13,26 +11,34 @@
     <h3>{{ detail.date_posted.date() }}</h3>
 
     <br>
-    <h2>{{ detail.name }}</h2>
     <h4>Разминка:</h4>
-    <p>{{ detail.warm_up }}</p>
-    <h4>Комплекс:</h4>
-    <p>{{ detail.workout }}</p>
-    <h4>Описание:</h4>
-    <p>{{ detail.description }}</p>
+    <p style="white-space: pre-line;">{{ detail.warm_up }}</p>
 
+    <br>
+    <h4>Комплекс:</h4>
+    {% if detail.name %}
+      <h2>{{ detail.name }}</h2>
+    {% endif %}
+    <p style="white-space: pre-line;">{{ detail.workout }}</p>
+
+    <br>
+    {% if detail.description %}
+
+    <br>
+        <h4>Описание:</h4>
+        <p style="white-space: pre-line;">{{ detail.description }}</p>
+    {% endif %}
 
     <br>
     <br>
     <p>Эту тренировку выполнили: {{ total_completions }} раз(а)</p>
 
-        {% if results.confirm %}
-            <p>Статус комплекса: Выполнено</p>
-        {% else %}
-            {{ wtf.quick_form(result_bool_form) }}
-            <p>Статус комплекса: Надо бахнуть</p>
-        {% endif %}
-
+    {% if results.confirm %}
+        <p>Статус комплекса: Выполнено</p>
+    {% else %}
+        {{ wtf.quick_form(result_bool_form) }}
+        <p>Статус комплекса: Надо бахнуть</p>
+    {% endif %}
 
 </div>
     {% if comment_form %}
@@ -42,6 +48,4 @@
     {% for comment in comments %}
         {% include 'main/_comment.html' %}
     {% endfor %}
-
-
 {% endblock %}
