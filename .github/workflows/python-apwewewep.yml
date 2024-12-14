@@ -64,59 +64,24 @@ jobs:
         pytest
       continue-on-error: true  # Continue even if this step fails
 
-  docker-build:
+  deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
     - uses: actions/checkout@v4
-    - name: List files in the repository
-      run: |
-        ls -la
-    - name: Check if requirements/base.txt exists
-      run: |
-        if [ ! -f requirements/base.txt ]; then
-          echo "requirements/base.txt not found! Creating a default requirements file..."
-          mkdir -p requirements
-          echo "flask" > requirements/base.txt
-          echo "flask_migrate" >> requirements/base.txt
-          echo "psycopg2-binary" >> requirements/base.txt
-        else
-          echo "requirements/base.txt already exists."
-        fi
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Build Docker image
-      run: |
-        docker build -t your_repo_name:latest .
-
-  docker-run:
-    runs-on: ubuntu-latest
-    needs: docker-build
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Run Docker container
-      run: |
-        docker run -d -p 5000:5000 your_repo_name:latest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: docker-run
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
       with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-    - name: Push Docker image
+        python-version: "3.10"
+    - name: Install dependencies
       run: |
-        docker tag your_repo_name:latest your_dockerhub_username/your_repo_name:latest
-        docker push your_dockerhub_username/your_repo_name:latest
+        python -m pip install --upgrade pip
+        pip install flask flask_migrate psycopg2-binary
+        if [ -f requirements/base.txt ]; then pip install -r requirements/base.txt; fi
     - name: Deploy to Cloud Service
       run: |
-        # Add commands to deploy the Docker image to your chosen cloud service
+        # Add commands to deploy the Flask application to your chosen cloud service
         echo "Deploying to cloud service..."
+        # Example: Deploy to Heroku
+        # heroku login
+        # git push heroku master
