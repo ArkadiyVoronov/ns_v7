@@ -64,11 +64,14 @@ jobs:
         pytest
       continue-on-error: true  # Continue even if this step fails
 
-  create-dockerfile:
+  docker-build:
     runs-on: ubuntu-latest
     needs: build
     steps:
     - uses: actions/checkout@v4
+    - name: List files in the repository
+      run: |
+        ls -la
     - name: Check if requirements/base.txt exists
       run: |
         if [ ! -f requirements/base.txt ]; then
@@ -80,39 +83,6 @@ jobs:
         else
           echo "requirements/base.txt already exists."
         fi
-    - name: Create Dockerfile
-      run: |
-        cat <<EOF > Dockerfile
-# Use the official Python image from the Docker Hub
-FROM python:3.10-slim
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the requirements file into the container
-COPY requirements/base.txt .
-
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements/base.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose the port the app runs on
-EXPOSE 5000
-
-# Command to run the application
-CMD ["python", "run.py"]
-EOF
-
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: create-dockerfile
-    steps:
-    - uses: actions/checkout@v4
-    - name: List files in the repository
-      run: |
-        ls -la
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     - name: Build Docker image
