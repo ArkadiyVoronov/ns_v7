@@ -7,3 +7,4 @@ class TestConfig(Config):
     WTF_CSRF_ENABLED = False  # Отключаем CSRF для тестов
     SECRET_KEY = 'test-secret-key'
     SERVER_NAME = 'localhost'
+    
