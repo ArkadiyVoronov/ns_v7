@@ -78,10 +78,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install flask flask_migrate psycopg2-binary
         if [ -f requirements/base.txt ]; then pip install -r requirements/base.txt; fi
-    - name: Deploy to Cloud Service
+    - name: Run Flask application
       run: |
-        # Add commands to deploy the Flask application to your chosen cloud service
-        echo "Deploying to cloud service..."
-        # Example: Deploy to Heroku
-        # heroku login
-        # git push heroku master
+        flask run --host=0.0.0.0 --port=5000 &
+        sleep 10  # Wait for the server to start
+        curl http://localhost:5000
