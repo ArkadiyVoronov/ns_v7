@@ -76,28 +76,26 @@ jobs:
       run: |
         if [ ! -f Dockerfile ]; then
           echo "Dockerfile not found! Creating Dockerfile..."
-          cat <<EOF > Dockerfile
-# Use the official Python image from the Docker Hub
-FROM python:3.10-slim
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the requirements file into the container
-COPY requirements/base.txt .
-
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements/base.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose the port the app runs on
-EXPOSE 5000
-
-# Command to run the application
-CMD ["python", "run.py"]
-EOF
+          echo "# Use the official Python image from the Docker Hub" > Dockerfile
+          echo "FROM python:3.10-slim" >> Dockerfile
+          echo "" >> Dockerfile
+          echo "# Set the working directory" >> Dockerfile
+          echo "WORKDIR /app" >> Dockerfile
+          echo "" >> Dockerfile
+          echo "# Copy the requirements file into the container" >> Dockerfile
+          echo "COPY requirements/base.txt ." >> Dockerfile
+          echo "" >> Dockerfile
+          echo "# Install the dependencies" >> Dockerfile
+          echo "RUN pip install --no-cache-dir -r requirements/base.txt" >> Dockerfile
+          echo "" >> Dockerfile
+          echo "# Copy the rest of the application code" >> Dockerfile
+          echo "COPY . ." >> Dockerfile
+          echo "" >> Dockerfile
+          echo "# Expose the port the app runs on" >> Dockerfile
+          echo "EXPOSE 5000" >> Dockerfile
+          echo "" >> Dockerfile
+          echo "# Command to run the application" >> Dockerfile
+          echo 'CMD ["python", "run.py"]' >> Dockerfile
         else
           echo "Dockerfile already exists."
         fi
