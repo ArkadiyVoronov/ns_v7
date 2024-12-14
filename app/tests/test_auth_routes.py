@@ -90,7 +90,7 @@ class TestAuthRoutes:
             remember=True
         ), follow_redirects=True)
         assert response.status_code == 200
-        assert f'/user/profile/newuser4' in response.data.decode('utf-8')
+        assert '/user/profile/newuser4' in response.data.decode('utf-8')
 
     def test_logout(self, client, test_user):
         # Разлогинивание
