@@ -141,4 +141,4 @@ jobs:
     - name: Deploy to Cloud Service
       run: |
         # Add commands to deploy the Docker image to your chosen cloud service
-        echo "Deploying to cloud service..."\
+        echo "Deploying to cloud service..."
