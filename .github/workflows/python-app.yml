@@ -1,138 +1,50 @@
-name: Python application
+name: Flask Application CI/CD
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
-
-permissions:
-  contents: read
+    branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: your_database_name
-          POSTGRES_USER: your_database_user
-          POSTGRES_PASSWORD: your_database_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
+    
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v5
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: '3.10'
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest flask flask_migrate psycopg2-binary
-        if [ -f requirements/base.txt ]; then pip install -r requirements/base.txt; fi
-        pip freeze > requirements/base.txt
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Initialize database migrations
-      run: |
-        flask db init
-    - name: Create initial migration
-      run: |
-        flask db migrate -m "Initial migration."
-    - name: Upgrade database
-      run: |
-        flask db upgrade
-    - name: Generate training data
-      run: flask create_workouts
+        pip install -r requirements.txt
+        pip install pytest
+        
     - name: Run tests
       run: |
-        pytest
-      continue-on-error: true  # Continue even if this step fails
-
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    steps:
-    - uses: actions/checkout@v4
-    - name: List files in the repository
-      run: |
-        ls -la
-    - name: Create Dockerfile if not exists
-      run: |
-        if [ ! -f Dockerfile ]; then
-          echo "Dockerfile not found! Creating Dockerfile..."
-          cat <<EOF > Dockerfile
-# Use the official Python image from the Docker Hub
-FROM python:3.10-slim
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the requirements file into the container
-COPY requirements/base.txt .
-
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements/base.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose the port the app runs on
-EXPOSE 5000
-
-# Command to run the application
-CMD ["python", "run.py"]
-EOF
-        else
-          echo "Dockerfile already exists."
-        fi
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Build Docker image
-      run: |
-        docker build -t your_repo_name:latest .
-
-  docker-run:
-    runs-on: ubuntu-latest
-    needs: docker-build
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Run Docker container
-      run: |
-        docker run -d -p 5000:5000 your_repo_name:latest
+        python -m pytest tests/ -v
 
   deploy:
+    needs: test
     runs-on: ubuntu-latest
-    needs: docker-run
+    if: github.ref == 'refs/heads/main'
+    
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-    - name: Push Docker image
+    
+    - name: Deploy to PythonAnywhere
+      env:
+        PYTHONANYWHERE_TOKEN: ${{ secrets.PYTHONANYWHERE_TOKEN }}
+        USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
       run: |
-        docker tag your_repo_name:latest your_dockerhub_username/your_repo_name:latest
-        docker push your_dockerhub_username/your_repo_name:latest
-    - name: Deploy to Cloud Service
-      run: |
-        # Add commands to deploy the Docker image to your chosen cloud service
-        echo "Deploying to cloud service..."
+        # Install PythonAnywhere CLI
+        pip install pythonanywhere
+
+        # Update the code on PythonAnywhere
+        pa_autoconfigure_django.py --python=3.10 \
+          --nuke \
+          https://github.com/${{ github.repository }}
