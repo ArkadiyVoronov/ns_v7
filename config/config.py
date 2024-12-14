@@ -17,5 +17,3 @@ class Config:
 
     # Отключить отслеживание изменений модели (экономия ресурсов)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-
