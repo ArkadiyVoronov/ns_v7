@@ -1,4 +1,4 @@
-name: Python application
+name: Deploy Flask app to Heroku
 
 on:
   push:
@@ -91,8 +91,18 @@ jobs:
       run: flask create_workouts
     - name: Create test user
       run: flask create_users
-    - name: Run Flask application
+    - name: Deploy to Heroku
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        HEROKU_APP_NAME: your_heroku_app_name
       run: |
-        flask run --host=0.0.0.0 --port=5000 &
-        sleep 10  # Wait for the server to start
-        curl http://localhost:5000
+        # Install Heroku CLI
+        curl https://cli-assets.heroku.com/install.sh | sh
+        # Log in to Heroku
+        heroku container:login
+        # Build and push the Docker image to Heroku
+        heroku container:push web -a $HEROKU_APP_NAME
+        # Release the Docker image to Heroku
+        heroku container:release web -a $HEROKU_APP_NAME
+        # Scale the web dyno to 1
+        heroku ps:scale web=1 -a $HEROKU_APP_NAME
