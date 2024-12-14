@@ -78,6 +78,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install flask flask_migrate psycopg2-binary
         if [ -f requirements/base.txt ]; then pip install -r requirements/base.txt; fi
+    - name: Initialize database migrations
+      run: |
+        flask db init
+    - name: Create initial migration
+      run: |
+        flask db migrate -m "Initial migration."
+    - name: Upgrade database
+      run: |
+        flask db upgrade
+    - name: Generate training data
+      run: flask create_workouts
+    - name: Create test user
+      run: flask create_users
     - name: Run Flask application
       run: |
         flask run --host=0.0.0.0 --port=5000 &
